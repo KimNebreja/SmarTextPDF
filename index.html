@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmarText PDF</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: Arial, Helvetica, sans-serif; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-content p {
+            font-size: 18px;
+            font-weight: 600;
+            color: #332219;
+            margin-top: -12px;
+            text-align: center;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #332219;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+        .hamburger {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #332219;
+        }
+        .hamburger .logo-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .hamburger .logo {
+            height: 44px;
+            width: auto;
+        }
+        .hamburger:hover {
+            background-color: #332219;
+        }
+        .hamburger i {
+            font-size: 25px;
+            color: #f4e8d9;
+            transition: transform 0.3s;
+        }
+        .sidebar.collapsed .hamburger i {
+            transform: rotate(180deg);
+        }
+        .external-toggle {
+            position: fixed;
+            left: 0;
+            top: 15px;
+            width: 40px;
+            height: 40px;
+            background-color: #332219;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: background-color 0.3s;
+        }
+        .external-toggle:hover {
+            background-color: #332219;
+        }
+        .external-toggle i {
+            font-size: 25px;
+            color: #f4e8d9;
+        }
+        .sidebar.collapsed + .external-toggle {
+            display: flex;
+        }
+        .signup-btn {
+            margin-top: auto;
+            padding: 8px;
+            text-align: center;
+        }
+        .signup-btn button {
+            background-color: #f4e8d9;
+            color: #332219;
+            border: none;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 600;
+            padding: 12px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 35%;
+            transition: background-color 0.3s;
+        }
+        .signup-btn button:hover {
+            background-color: #f5dec1;
+        }
+        .phrase {
+            font-size: 12px;
+            font-weight: 400;
+            color: #f4e8d9;
+            text-align: center;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            transition: margin-left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .main-content.expanded {
+            margin-left: 0;
+        }
+        #uploadForm { 
+            margin: 28px auto;
+            padding: 65px 200px;
+            border: 2px dashed #332219;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: fit-content;
+        }
+        input, button { 
+            margin-top: 10px;
+        }
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        #uploadForm button {
+            background-color: #332219;
+            color: #f4e8d9;
+            border: none;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #uploadForm button i {
+            font-size: 20px;
+        }
+        #uploadForm button:hover {
+            background-color: #4a321f;
+        }
+        #proofreadSection { display: none; margin-top: 20px; }
+        textarea { width: 80%; height: 200px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="hamburger" id="hamburger">
+            <div class="logo-container">
+                <img src="SmarText PDF_sidebar-logo.svg" alt="SmarText PDF" class="logo">
+                <i class='bx bx-sidebar'></i>
+            </div>
+        </div>
+        <div class="signup-btn">
+            <button>Sign In</button>
+        </div>
+        <div class="phrase">
+            <p>Sign in for free to save and track your file proofreading history.</p>
+        </div>
+    </div>
+
+    <button class="external-toggle" id="externalToggle">
+        <i class='bx bx-sidebar bx-flip-horizontal' ></i>
+    </button>
+
+    <div class="main-content" id="mainContent">
+        <img src="SmarText PDF_main-logo.svg" alt="SmarText PDF" class="main-logo">
+        <p>Automated Proofreading With Text-to-Speech Functionality</p>
+        
+        <div class="upload-container">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <p>Click to upload or drag and drop PDF here</p>
+                <img src="SmarText PDF_folder-icon.svg" alt="SmarText PDF" class="folder-icon">
+                <input type="file" id="pdfFile" accept="application/pdf" required>
+                <button type="submit"><i class='bx bx-upload'></i>Upload PDF</button>
+            </form>
+            <p id="status"></p>
+        </div>
+
+        <div id="proofreadSection">
+            <h2>Proofread Text</h2>
+            <textarea id="proofreadText" readonly></textarea><br>
+            <a id="downloadLink" style="display: none;" download>Download Proofread DOCX</a>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const hamburger = document.getElementById('hamburger');
+        const externalToggle = document.getElementById('externalToggle');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        hamburger.addEventListener('click', toggleSidebar);
+        externalToggle.addEventListener('click', toggleSidebar);
+
+        // Existing form submission code
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let fileInput = document.getElementById('pdfFile');
+            if (!fileInput.files.length) return;
+
+            let formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            document.getElementById('status').innerText = "Converting...";
+
+            try {
+                let response = await fetch('https://pdf-docs.onrender.com/convert', { 
+                    method: 'POST', 
+                    body: formData 
+                });
+
+                if (!response.ok) {
+                    document.getElementById('status').innerText = "Conversion failed!";
+                    return;
+                }
+
+                let data = await response.json();
+                
+                // Display proofread text
+                document.getElementById('proofreadText').value = data.proofread_text;
+                document.getElementById('proofreadSection').style.display = "block";
+
+                // Set download link
+                let downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = 'https://pdf-docs.onrender.com' + data.download_url;
+                downloadLink.innerText = "Download Proofread DOCX";
+                downloadLink.style.display = "block";
+                
+            } catch (error) {
+                document.getElementById('status').innerText = "Error: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
