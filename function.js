@@ -27,7 +27,7 @@ document.getElementById('pdfFile').addEventListener('change', function(event) {
         fileReader.readAsArrayBuffer(file);
     }
 });
-function extractText(pdf) {
+async function extractText(pdf) {
             let fullText = "";
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
