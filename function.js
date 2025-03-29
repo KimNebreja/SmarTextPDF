@@ -95,7 +95,7 @@ async function handleFormSubmit() {
         
         // Store the proofread data in localStorage
         localStorage.setItem('proofreadData', JSON.stringify(data));
-        localStorage.setItem('originalText', JSON.stringify(data.original_text));
+        localStorage.setItem('originalData', JSON.stringify(data.original_text));
         
         // Redirect to proofread page
         window.location.href = 'proofread.html';
