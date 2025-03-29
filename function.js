@@ -7,6 +7,17 @@ const uploadButton = document.querySelector('.upload-button');
 // State Management
 let isUploading = false;
 
+ function extractText(pdf) {
+            let fullText = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                textContent.items.forEach(item => fullText += item.str + " ");
+                fullText += "\n";
+            }
+            return fullText;
+        }
+
 // File Upload Functionality
 function validateFile(file) {
     if (!file) {
