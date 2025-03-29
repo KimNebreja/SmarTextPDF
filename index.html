@@ -8,29 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 
+
 </head>
 <body>
     <div class="sidebar" id="sidebar">
         <div class="logo-container">
-            <img src="SmarText PDF_sidebar-logo.svg" alt="SmarText PDF" class="logo">
+            <a href="index.html">
+                <img src="SmarText PDF_sidebar-logo.svg" alt="SmarText PDF" class="logo">
+            </a>
         </div>
-        <div class="hamburger" id="hamburger">  
-            <i class='bx bx-sidebar'></i>
-        </div>
+
         <div class="sidebar-file-style-icon">
             <img src="SmarText PDF_file-style-logo.svg" alt="File Style Logo" class="file-style-icon">
         </div>
         <div class="signup-btn">
             <button>Sign In</button>
-        </div>
-        <div class="phrase">
             <p>Sign in for free to save and track your file proofreading history.</p>
         </div>
     </div>
-
-    <button class="external-toggle" id="externalToggle">
-        <i class='bx bx-sidebar bx-flip-horizontal' ></i>
-    </button>
 
     <div class="main-content" id="mainContent">
         <img src="SmarText PDF_main-logo.svg" alt="SmarText PDF" class="main-logo">
@@ -40,151 +35,18 @@
             <form id="uploadForm" enctype="multipart/form-data">
                 <p>Click to upload or drag and drop PDF here</p>
                 <img src="SmarText PDF_folder-icon.svg" alt="SmarText PDF" class="folder-icon">
-                <input type="file" id="pdfFile" accept="application/pdf" required>
-                <button type="submit"><i class='bx bx-upload'></i>Upload PDF</button>
+                <div class="upload-button-container">
+                    <input type="file" id="pdfFile" accept="application/pdf" required>
+                    <button type="button" class="upload-button">
+                        <i class='bx bx-upload'></i>
+                        <span>Upload PDF</span>
+                    </button>
+                </div>
             </form>
             <p id="status"></p>
         </div>
-
-        <div id="proofreadSection">
-            <h2>Proofread Text</h2>
-            <textarea id="proofreadText" readonly></textarea><br>
-            <a id="downloadLink" style="display: none;" download>Download Proofread DOCX</a>
-        </div>
     </div>
-
-    <script>
-        // Sidebar toggle functionality
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const hamburger = document.getElementById('hamburger');
-        const externalToggle = document.getElementById('externalToggle');
-        let isMobile = window.innerWidth <= 768;
-
-        function toggleSidebar() {
-            if (isMobile) {
-                sidebar.classList.toggle('active');
-                mainContent.classList.toggle('expanded');
-            } else {
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-            }
-        }
-
-        function closeSidebarOnClickOutside(e) {
-            if (isMobile && sidebar.classList.contains('active') && 
-                !sidebar.contains(e.target) && 
-                !externalToggle.contains(e.target)) {
-                sidebar.classList.remove('active');
-                mainContent.classList.remove('expanded');
-            }
-        }
-
-        function handleResize() {
-            const newIsMobile = window.innerWidth <= 768;
-            if (newIsMobile !== isMobile) {
-                isMobile = newIsMobile;
-                if (!isMobile) {
-                    sidebar.classList.remove('active');
-                    mainContent.classList.remove('expanded');
-                }
-            }
-        }
-
-        // Event Listeners
-        hamburger.addEventListener('click', toggleSidebar);
-        externalToggle.addEventListener('click', toggleSidebar);
-        document.addEventListener('click', closeSidebarOnClickOutside);
-        window.addEventListener('resize', handleResize);
-
-        // Form submission code
-        const uploadForm = document.getElementById('uploadForm');
-        const fileInput = document.getElementById('pdfFile');
-        const status = document.getElementById('status');
-
-        // Handle drag and drop
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadForm.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadForm.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadForm.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight(e) {
-            uploadForm.classList.add('highlight');
-        }
-
-        function unhighlight(e) {
-            uploadForm.classList.remove('highlight');
-        }
-
-        uploadForm.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            fileInput.files = files;
-            handleFiles(files);
-        }
-
-        fileInput.addEventListener('change', function() {
-            handleFiles(this.files);
-        });
-
-        function handleFiles(files) {
-            if (files.length > 0) {
-                uploadForm.submit();
-            }
-        }
-
-        uploadForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!fileInput.files.length) return;
-
-            let formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            status.innerText = "Uploading...";
-
-            try {
-                let response = await fetch('https://pdf-docs.onrender.com/convert', { 
-                    method: 'POST', 
-                    body: formData 
-                });
-
-                if (!response.ok) {
-                    status.innerText = "Conversion failed!";
-                    return;
-                }
-
-                let data = await response.json();
-                
-                // Display proofread text
-                document.getElementById('proofreadText').value = data.proofread_text;
-                document.getElementById('proofreadSection').style.display = "block";
-
-                // Set download link
-                let downloadLink = document.getElementById('downloadLink');
-                downloadLink.href = 'https://pdf-docs.onrender.com' + data.download_url;
-                downloadLink.innerText = "Download Proofread DOCX";
-                downloadLink.style.display = "block";
-                
-            } catch (error) {
-                status.innerText = "Error: " + error.message;
-            }
-        });
-
-        // Initial check
-        handleResize();
-    </script>
+    
+    <script src="function.js"></script>
 </body>
 </html>
