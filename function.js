@@ -11,7 +11,7 @@ let originalPdfBytes;
 let originalPdf;
 let extractedText = "";
 
-document.getElementById('fileInput').addEventListener('change', function(event) {
+document.getElementById('pdfFile').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (file) {
         const fileReader = new FileReader();
