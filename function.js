@@ -7,34 +7,6 @@ const uploadButton = document.querySelector('.upload-button');
 // State Management
 let isUploading = false;
 
- document.getElementById('fileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const fileReader = new FileReader();
-                fileReader.onload = async function() {
-                    originalPdfBytes = this.result;
-                    const typedArray = new Uint8Array(originalPdfBytes);
-                    pdfjsLib.getDocument(typedArray).promise.then(async pdf => {
-                        originalPdf = pdf;
-                        extractedText = await extractText(originalPdf);
-                        document.getElementById("originalText").value = extractedText;
-                    });
-                };
-                fileReader.readAsArrayBuffer(file);
-            }
-        });
-
- function extractText(pdf) {
-            let fullText = "";
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                textContent.items.forEach(item => fullText += item.str + " ");
-                fullText += "\n";
-            }
-            return fullText;
-        }
-
 // File Upload Functionality
 function validateFile(file) {
     if (!file) {
@@ -123,7 +95,7 @@ async function handleFormSubmit() {
         
         // Store the proofread data in localStorage
         localStorage.setItem('proofreadData', JSON.stringify(data));
-        localStorage.setItem('originalData', JSON.stringify(data.original_text));
+        localStorage.setItem('originalText', JSON.stringify(data.original_text));
         
         // Redirect to proofread page
         window.location.href = 'proofread.html';
