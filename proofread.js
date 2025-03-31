@@ -50,9 +50,8 @@ audioControl.addEventListener('click', () => {
         // Get available voices and set to female voice
         const voices = window.speechSynthesis.getVoices();
         const femaleVoice = voices.find(voice => voice.name.includes('Female'));
-        if (femaleVoice) {
-            utterance.voice = femaleVoice;
-        }
+        
+        utterance.voice = femaleVoice;
         window.speechSynthesis.speak(utterance);
         audioControl.querySelector('i').classList.replace('fa-volume-up', 'fa-volume-mute');
     } else {
