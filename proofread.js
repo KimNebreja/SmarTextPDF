@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }); 
 
+//Text-to-Speech Functionality
  function speakProofreadContent() {
     let contentElement = document.getElementById("proofreadContent");
 
