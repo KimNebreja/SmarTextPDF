@@ -109,9 +109,11 @@
     window.speechSynthesis.speak(speech);
 }
 
-// Ensure voices are loaded
-window.speechSynthesis.onvoiceschanged = () => {
-    console.log("Available voices:", window.speechSynthesis.getVoices());
+if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = setVoice;
+    } else {
+        setVoice();
+    }
 };
 
 
