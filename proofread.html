@@ -88,7 +88,7 @@
     // Get available voices
     let voices = window.speechSynthesis.getVoices();
 
-    // Try to select a female voice
+    // Choose a female voice
     let femaleVoice = voices.find(voice => 
         voice.name.includes("Google UK English Female") || 
         voice.name.includes("Google US English") || 
@@ -103,13 +103,13 @@
         console.log("No specific female voice found, using default.");
     }
 
-    speech.rate = 1.0;  // Normal speed
+    speech.rate = 1.0;  // Adjust speed (1.0 = normal)
     speech.pitch = 1.2; // Slightly higher pitch for a more feminine tone
 
     window.speechSynthesis.speak(speech);
 }
 
-// Ensure voices are loaded properly
+// Ensure voices are loaded
 window.speechSynthesis.onvoiceschanged = () => {
     console.log("Available voices:", window.speechSynthesis.getVoices());
 };
