@@ -49,7 +49,7 @@ audioControl.addEventListener('click', () => {
         const utterance = new SpeechSynthesisUtterance(text);
         // Get available voices and set to female voice
         const voices = window.speechSynthesis.getVoices();
-        const femaleVoice = voices.find(voice => voice.name.includes('Female'));
+        const femaleVoice = voices.find(voice => voice.name.includes('samantha'));
         
         utterance.voice = femaleVoice;
         window.speechSynthesis.speak(utterance);
