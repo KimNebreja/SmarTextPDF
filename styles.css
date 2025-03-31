@@ -20,7 +20,7 @@ body {
     font-weight: 800;
 }
 .sidebar {
-    width: 250px;
+    width: 254px;
     height: 100vh;
     background-color: #332219;
     color: white;
@@ -37,29 +37,40 @@ body {
     transform: translateX(-100%);
 }
 .hamburger {
-    padding: 4px;
-    margin-top: -57px;
+    padding: 1px;
+    margin: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: right;
+    justify-content: center;
+    background: transparent;
+    border-radius: 4px;
+    transition: background-color 0.2s;
 }
 .logo-container {
     display: flex;
     align-items: center;
-    margin: 20px 0;
-    width: 100%;
     justify-content: space-between;
+    padding: 20px 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.logo-container a {
+    display: flex;
+    align-items: center;
+    max-width: 80%;
 }
 .logo {
     height: 44px;
     width: auto;
+    max-width: 108%;
+    object-fit: contain;
 }
 .hamburger:hover {
-    background-color: transparent;
+    background-color: rgba(244, 232, 217, 0.1);
 }
 .hamburger i {
-    font-size: 25px;
+    font-size: 24px;
     color: #f4e8d9;
     transition: transform 0.3s;
 }
@@ -72,7 +83,7 @@ body {
     top: 15px;
     width: 40px;
     height: 40px;
-    background-color: #332219;
+    background-color: transparent;
     color: white;
     border: none;
     border-radius: 0 5px 5px 0;
@@ -84,11 +95,11 @@ body {
     transition: background-color 0.3s;
 }
 .external-toggle:hover {
-    background-color: #332219;
+    background-color: #f4e8d9;
 }
 .external-toggle i {
     font-size: 25px;
-    color: #f4e8d9;
+    color: #332219;
 }
 .sidebar.collapsed + .external-toggle {
     display: flex;
@@ -123,15 +134,14 @@ body {
 }
 .main-content {
     margin-left: 250px;
-    padding: 20px;
+    padding: 0;
     width: calc(100% - 250px);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
     min-height: 100vh;
     box-sizing: border-box;
+    background: #f5f5f5;
 }
 .main-content.expanded {
     margin-left: 0;
@@ -184,14 +194,6 @@ input, button {
 #uploadForm button:hover {
     background-color: #4a321f;
 }
-#proofreadSection { 
-    display: none; 
-    margin-top: 20px;
-    width: 100%;
-    max-width: 800px;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
 textarea { 
     width: 100%;
     height: 200px;
@@ -216,18 +218,143 @@ textarea {
     background-color: #4a321f;
 }
 
+/* Top controls bar */
+.document-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 16px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.zoom-controls button {
+    background: white;
+    border: none;
+    padding: 4px 12px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #333;
+}
+
+.zoom-controls button:hover {
+    background: #f5f5f5;
+}
+
+.page-refresh {
+    color: #332219;
+    font-size: 30px;
+    padding: 0 1px;
+}
+
+.audio-control, .download-control {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #332219;
+    font-size: 20px;
+}
+
+/* Document container */
+.document-container {
+    display: flex;
+    flex: 1;
+    background: #332219;
+    padding: 0;
+    gap: 1px;
+}
+
+#originalSection, #proofreadSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 30px 45px;
+    background: white;
+    height: calc(100vh - 100px);
+}
+
+.section-header {
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #332219;
+    font-weight: normal;
+}
+
+.document-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    border: 0.5px solid lightgray;
+    background: white;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* Text highlighting styles */
+.error-highlight {
+    background-color: #ffcdd2;
+    padding: 2px 0;
+}
+
+.correction-highlight {
+    background-color: #c8e6c9;
+    padding: 2px 0;
+}
+
+/* Scrollbar styling */
+.document-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.document-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.document-content::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 4px;
+}
+
+.document-content::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 1200px) {
     .sidebar {
-        width: 220px;
+        width: 225px;
     }
     .main-content {
-        margin-left: 220px;
-        width: calc(100% - 220px);
+        margin-left: 225px;
+        width: calc(100% - 225px);
     }
-    .sidebar-file-style-icon .file-style-icon {
-        width: 150px;
-        height: 150px;
+    .logo {
+        height: 40px;
+    }
+    .file-style-icon {
+        width: 140px;
+        height: 140px;
     }
     .upload-container {
         width: 85%;
@@ -242,18 +369,28 @@ textarea {
         margin-left: 200px;
         width: calc(100% - 200px);
     }
-    .sidebar-file-style-icon {
-        padding: 15px 0;
+    .logo {
+        height: 36px;
     }
-    .sidebar-file-style-icon .file-style-icon {
-        width: 130px;
-        height: 130px;
+    .file-style-icon {
+        width: 120px;
+        height: 120px;
+    }
+    .hamburger i {
+        font-size: 22px;
     }
     .upload-container {
         width: 90%;
     }
     #uploadForm {
         padding: 20px;
+    }
+    .document-container {
+        flex-direction: column;
+    }
+
+    #originalSection, #proofreadSection {
+        height: 50vh;
     }
 }
 
@@ -273,13 +410,25 @@ textarea {
         padding: 15px;
     }
     
-    .sidebar-file-style-icon {
-        padding: 12px 0;
+    .logo-container {
+        padding: 16px 12px;
     }
     
-    .sidebar-file-style-icon .file-style-icon {
-        width: 110px;
-        height: 110px;
+    .logo {
+        height: 32px;
+    }
+    
+    .file-style-icon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .hamburger {
+        padding: 6px;
+    }
+    
+    .hamburger i {
+        font-size: 20px;
     }
     
     .upload-container {
@@ -305,6 +454,18 @@ textarea {
         font-size: 16px;
         margin-top: -8px;
     }
+
+    .document-controls {
+        padding: 8px;
+    }
+
+    .zoom-controls button {
+        padding: 4px 8px;
+    }
+
+    .document-content {
+        padding: 20px;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -312,13 +473,25 @@ textarea {
         width: 160px;
     }
     
-    .sidebar-file-style-icon {
-        padding: 10px 0;
+    .logo-container {
+        padding: 12px 8px;
     }
     
-    .sidebar-file-style-icon .file-style-icon {
-        width: 90px;
-        height: 90px;
+    .logo {
+        height: 28px;
+    }
+    
+    .file-style-icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .hamburger {
+        padding: 4px;
+    }
+    
+    .hamburger i {
+        font-size: 18px;
     }
     
     .upload-container {
@@ -350,17 +523,22 @@ textarea {
 }
 
 @media screen and (max-height: 600px) {
+    .logo-container {
+        padding: 12px 8px;
+    }
+    
+    .logo {
+        height: 32px;
+    }
+    
+    .file-style-icon {
+        width: 100px;
+        height: 100px;
+        margin: 10px 0;
+    }
+    
     .sidebar-file-style-icon {
-        padding: 10px 0;
-    }
-    
-    .sidebar-file-style-icon .file-style-icon {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .upload-container {
-        margin: 10px auto;
+        padding: 10px;
     }
     
     textarea {
@@ -370,7 +548,7 @@ textarea {
 
 /* Touch Device Optimizations */
 @media (hover: none) {
-    .sidebar-file-style-icon .file-style-icon {
+    .file-style-icon {
         opacity: 1;
     }
     
@@ -383,20 +561,22 @@ textarea {
 .main-logo {
     max-width: 100%;
     height: auto;
-    margin: 70px 0 15px;
+    margin: 70px 60px 15px;
 }
 
 .sidebar-file-style-icon {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
     margin: auto 0;
-    padding: 20px 0;
 }
 
-.sidebar-file-style-icon .file-style-icon {
+.file-style-icon {
     width: 165px;
     height: 165px;
+    max-width: 80%;
+    object-fit: contain;
     transition: all 0.3s ease;
 }
 
@@ -455,11 +635,3 @@ textarea {
     background-color: #4a321f;
     cursor: wait;
 }
-
-.original-text {
-    width: 100%;
-    height: 200px;
-    margin-top: 10px;
-    padding: 15px;  
-}
-
