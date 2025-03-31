@@ -45,7 +45,7 @@ function updateZoom() {
 let isSpeaking = false;
 
  function speakText() {
-            let text = document.getElementById("textToSpeak").value;
+            let text = document.getElementById("proofreadContent").value;
             let speech = new SpeechSynthesisUtterance(text);
 
             let voices = window.speechSynthesis.getVoices();
