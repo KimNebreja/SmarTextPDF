@@ -41,8 +41,7 @@ function updateZoom() {
     proofreadContent.style.fontSize = `${currentZoom}%`;
 }
 
-// Text-to-speech functionality using Google TTS (Female Voice)
-let isSpeaking = false;
+
 
  function speakText() {
             let text = document.getElementById("proofreadContent").value;
@@ -67,11 +66,6 @@ let isSpeaking = false;
             console.log(window.speechSynthesis.getVoices());
         };
 
-// Ensure voices are loaded before selecting
-window.speechSynthesis.onvoiceschanged = () => {
-    const voices = window.speechSynthesis.getVoices();
-    console.log('Available voices:', voices);
-};
 
 
 // Function to highlight differences
