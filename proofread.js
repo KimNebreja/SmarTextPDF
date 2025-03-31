@@ -129,7 +129,7 @@ function toggleSpeech() {
         window.speechSynthesis.cancel();
         isSpeaking = false;
         isPaused = false;
-        button.innerHTML = '<i id="speechIcon" class="fas fa-volume-up"></i> Read Aloud';
+        button.innerHTML = '<i id="speechIcon" class="bx bxs-volume-full"></i>';
         pauseButton.style.display = "none"; 
         console.log("Speech stopped.");
     } else {
@@ -174,13 +174,13 @@ function toggleSpeech() {
 
             isSpeaking = true;
             isPaused = false;
-            button.innerHTML = '<i id="speechIcon" class="fas fa-stop"></i>';
+            button.innerHTML = '<i id="speechIcon" class="bx bx-volume-full"></i>';
             pauseButton.style.display = "inline-block"; 
 
             speechInstance.onend = () => {
                 isSpeaking = false;
                 isPaused = false;
-                button.innerHTML = '<i id="speechIcon" class="fas fa-volume-up"></i>';
+                button.innerHTML = '<i id="speechIcon" class="bx bxs-volume-full"></i>';
                 pauseButton.style.display = "none";
             };
 
@@ -202,12 +202,12 @@ function pauseSpeech() {
         if (isPaused) {
             window.speechSynthesis.resume();
             isPaused = false;
-            button.innerHTML = '<i class="fas fa-pause"></i>';
+            button.innerHTML = '<i class="bx bx-pause" ></i>';
             console.log("Speech resumed.");
         } else {
             window.speechSynthesis.pause();
             isPaused = true;
-            button.innerHTML = '<i class="fas fa-play"></i>';
+            button.innerHTML = '<i class="bx bx-play" ></i>';
             console.log("Speech paused.");
         }
     }
