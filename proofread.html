@@ -68,9 +68,16 @@
     <script src="sidebar.js"></script>
     <script src="proofread.js"></script>
     <script>
-         function speakProofreadContent() {
-    let content = document.getElementById("proofreadContent");
-    
+    function speakProofreadContent() {
+    let contentElement = document.getElementById("proofreadContent");
+
+    if (!contentElement) {
+        alert("Content section not found.");
+        return;
+    }
+
+    let content = contentElement.innerText.trim(); // Get actual text
+
     if (!content) {
         alert("No text available to read.");
         return;
@@ -81,7 +88,7 @@
     // Get available voices
     let voices = window.speechSynthesis.getVoices();
 
-    // Choose a female voice
+    // Try to select a female voice
     let femaleVoice = voices.find(voice => 
         voice.name.includes("Google UK English Female") || 
         voice.name.includes("Google US English") || 
@@ -96,11 +103,17 @@
         console.log("No specific female voice found, using default.");
     }
 
-    speech.rate = 1.0;  // Adjust speed (1.0 = normal)
+    speech.rate = 1.0;  // Normal speed
     speech.pitch = 1.2; // Slightly higher pitch for a more feminine tone
 
     window.speechSynthesis.speak(speech);
 }
+
+// Ensure voices are loaded properly
+window.speechSynthesis.onvoiceschanged = () => {
+    console.log("Available voices:", window.speechSynthesis.getVoices());
+};
+
 
     </script>
 </body>
