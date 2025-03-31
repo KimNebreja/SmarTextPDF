@@ -127,7 +127,7 @@ function toggleSpeech() {
         // If speaking, stop the speech
         window.speechSynthesis.cancel();
         isSpeaking = false;
-        button.innerHTML = '<i id="speechIcon" class="fas fa-volume-up"></i> Read Aloud'; // Change back to Read Aloud icon
+        button.innerHTML = '<i id="speechIcon" class='bx bxs-volume-full' ></i> Read Aloud'; // Change back to Read Aloud icon
         console.log("Speech stopped.");
     } else {
         // Start reading
@@ -177,7 +177,7 @@ function toggleSpeech() {
             // When speech ends, reset button
             speechInstance.onend = () => {
                 isSpeaking = false;
-                button.innerHTML = '<i id="speechIcon" class="fas fa-volume-up"></i> Read Aloud';
+                button.innerHTML = '<i id="speechIcon" class='bx bxs-volume-full' ></i></i> Read Aloud';
             };
 
             // Remove event listener to prevent looping
