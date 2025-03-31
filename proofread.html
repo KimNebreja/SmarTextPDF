@@ -106,7 +106,12 @@
     speech.rate = 1.0;  // Adjust speed (1.0 = normal)
     speech.pitch = 1.2; // Slightly higher pitch for a more feminine tone
 
-    window.speechSynthesis.speak(speech);
+     // Stop any previous speech before starting a new one
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(speech);
+
+        // Remove event listener to prevent looping
+        window.speechSynthesis.onvoiceschanged = null;
 }
 
 if (window.speechSynthesis.getVoices().length === 0) {
