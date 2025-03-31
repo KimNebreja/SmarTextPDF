@@ -7,37 +7,6 @@ const uploadButton = document.querySelector('.upload-button');
 // State Management
 let isUploading = false;
 
-let originalPdfBytes;
-let originalPdf;
-let extractedText = "";
-
-document.getElementById('pdfFile').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const fileReader = new FileReader();
-        fileReader.onload = async function() {
-            originalPdfBytes = this.result;
-            const typedArray = new Uint8Array(originalPdfBytes);
-            pdfjsLib.getDocument(typedArray).promise.then(async pdf => {
-                originalPdf = pdf;
-                extractedText = await extractText(originalPdf);
-                document.getElementById("originalText").value = extractedText;
-            });
-        };
-        fileReader.readAsArrayBuffer(file);
-    }
-});
-async function extractText(pdf) {
-            let fullText = "";
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                textContent.items.forEach(item => fullText += item.str + " ");
-                fullText += "\n";
-            }
-            return fullText;
-        }
-
 // File Upload Functionality
 function validateFile(file) {
     if (!file) {
@@ -123,10 +92,17 @@ async function handleFormSubmit() {
         }
 
         const data = await response.json();
+        console.log('Server response:', data);
+
+        if (!data.original_text || !data.proofread_text) {
+            throw new Error('Missing required text data from server');
+        }
         
-        // Store the proofread data in localStorage
+        // Store the data in localStorage
         localStorage.setItem('proofreadData', JSON.stringify(data));
-        localStorage.setItem('originalSection', JSON.stringify(data.original_text));
+        localStorage.setItem('originalData', JSON.stringify({
+            original_text: data.original_text
+        }));
         
         // Redirect to proofread page
         window.location.href = 'proofread.html';
