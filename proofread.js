@@ -42,6 +42,7 @@ function updateZoom() {
 }
 
 
+
 // Function to highlight differences
 function highlightDifferences(original, proofread) {
     const words1 = original.split(/\s+/);
