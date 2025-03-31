@@ -561,7 +561,8 @@ textarea {
 .main-logo {
     max-width: 100%;
     height: auto;
-    margin: 70px 60px 15px;
+    margin: 70px auto 15px;
+    display: block;
 }
 
 .sidebar-file-style-icon {
@@ -635,3 +636,5 @@ textarea {
     background-color: #4a321f;
     cursor: wait;
 }
+
+
