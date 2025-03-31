@@ -116,21 +116,23 @@ document.addEventListener('DOMContentLoaded', function() {
 }); 
 
 //Text-to-Speech Functionality
-let speechInstance = null; // Store speech instance globally
-let isSpeaking = false; // Track speech state
+let speechInstance = null;
+let isSpeaking = false;
+let isPaused = false;
 
 function toggleSpeech() {
     let button = document.getElementById("speechButton");
     let icon = document.getElementById("speechIcon");
+    let pauseButton = document.getElementById("pauseButton");
 
     if (isSpeaking) {
-        // If speaking, stop the speech
         window.speechSynthesis.cancel();
         isSpeaking = false;
-        button.innerHTML = '<i id="speechIcon" class='bx bxs-volume-full' ></i> Read Aloud'; // Change back to Read Aloud icon
+        isPaused = false;
+        button.innerHTML = '<i id="speechIcon" class="fas fa-volume-up"></i> Read Aloud';
+        pauseButton.style.display = "none"; 
         console.log("Speech stopped.");
     } else {
-        // Start reading
         let contentElement = document.getElementById("proofreadContent");
 
         if (!contentElement) {
@@ -138,7 +140,7 @@ function toggleSpeech() {
             return;
         }
 
-        let content = contentElement.innerText.trim(); // Get actual text
+        let content = contentElement.innerText.trim();
 
         if (!content) {
             alert("No text available to read.");
@@ -167,20 +169,21 @@ function toggleSpeech() {
             speechInstance.rate = 1.0;
             speechInstance.pitch = 1.2;
 
-            // Stop any previous speech before starting a new one
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(speechInstance);
 
             isSpeaking = true;
-            button.innerHTML = '<i id="speechIcon" class="fas fa-stop"></i> Stop'; // Change to Stop icon
+            isPaused = false;
+            button.innerHTML = '<i id="speechIcon" class="fas fa-stop"></i> Stop';
+            pauseButton.style.display = "inline-block"; 
 
-            // When speech ends, reset button
             speechInstance.onend = () => {
                 isSpeaking = false;
-                button.innerHTML = '<i id="speechIcon" class='bx bxs-volume-full' ></i></i> Read Aloud';
+                isPaused = false;
+                button.innerHTML = '<i id="speechIcon" class="fas fa-volume-up"></i> Read Aloud';
+                pauseButton.style.display = "none";
             };
 
-            // Remove event listener to prevent looping
             window.speechSynthesis.onvoiceschanged = null;
         }
 
@@ -188,6 +191,24 @@ function toggleSpeech() {
             window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
         } else {
             setVoiceAndSpeak();
+        }
+    }
+}
+
+function pauseSpeech() {
+    let button = document.getElementById("pauseButton");
+
+    if (isSpeaking) {
+        if (isPaused) {
+            window.speechSynthesis.resume();
+            isPaused = false;
+            button.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            console.log("Speech resumed.");
+        } else {
+            window.speechSynthesis.pause();
+            isPaused = true;
+            button.innerHTML = '<i class="fas fa-play"></i> Play';
+            console.log("Speech paused.");
         }
     }
 }
