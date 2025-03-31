@@ -114,3 +114,55 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'index.html';
     }
 }); 
+
+ function speakProofreadContent() {
+    let contentElement = document.getElementById("proofreadContent");
+
+    if (!contentElement) {
+        alert("Content section not found.");
+        return;
+    }
+
+    let content = contentElement.innerText.trim(); // Get actual text
+
+    if (!content) {
+        alert("No text available to read.");
+        return;
+    }
+
+    let speech = new SpeechSynthesisUtterance(content);
+
+    // Get available voices
+    let voices = window.speechSynthesis.getVoices();
+
+    // Choose a female voice
+    let femaleVoice = voices.find(voice => 
+        voice.name.includes("Google UK English Female") || 
+        voice.name.includes("Google US English") || 
+        voice.name.includes("Samantha") || 
+        voice.name.includes("Microsoft Zira")
+    );
+
+    if (femaleVoice) {
+        speech.voice = femaleVoice;
+        console.log("Using voice:", femaleVoice.name);
+    } else {
+        console.log("No specific female voice found, using default.");
+    }
+
+    speech.rate = 1.0;  // Adjust speed (1.0 = normal)
+    speech.pitch = 1.2; // Slightly higher pitch for a more feminine tone
+
+     // Stop any previous speech before starting a new one
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(speech);
+
+        // Remove event listener to prevent looping
+        window.speechSynthesis.onvoiceschanged = null;
+}
+
+if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = setVoice;
+    } else {
+        setVoice();
+    }
