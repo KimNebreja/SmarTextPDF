@@ -14,9 +14,9 @@
             <a href="index.html">
                 <img src="SmarText PDF_sidebar-logo.svg" alt="SmarText PDF" class="logo">
             </a>
-        </div>
-        <div class="hamburger" id="hamburger">  
-            <i class='bx bx-sidebar'></i>
+            <div class="hamburger" id="hamburger">
+                <i class='bx bx-sidebar'></i>
+            </div>
         </div>
         <div class="sidebar-file-style-icon">
             <img src="SmarText PDF_file-style-logo.svg" alt="File Style Logo" class="file-style-icon">
@@ -28,19 +28,41 @@
     </div>
 
     <button class="external-toggle" id="externalToggle">
-        <i class='bx bx-sidebar bx-flip-horizontal' ></i>
+        <i class='bx bx-sidebar bx-flip-horizontal'></i>
     </button>
 
     <div class="main-content" id="mainContent">
-        <div id="originalSection">
-            <h2>Original Version</h2>
-            <textarea id="originalText" readonly></textarea>
+        <div class="document-controls">
+            <div class="zoom-controls">
+                <button id="zoomOut">−</button>
+                <span class="page-refresh"><i class='bx bx-refresh'></i></span>
+                <button id="zoomIn">+</button>
+            </div>
+            <div class="controls-right">
+                <button class="audio-control">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button id="downloadBtn" class="download-control">
+                    <i class='bx bx-download'></i>
+                </button>
+            </div>
         </div>
-        <div id="proofreadSection">
-            <h2>Proofread Version</h2>
-            <textarea id="proofreadText" readonly></textarea><br>
+
+        <div class="document-container">
+            <div id="originalSection">
+                <div class="section-header">
+                    <h2>For Proofread.pdf</h2>
+                </div>
+                <div id="originalContent" class="document-content"></div>
+            </div>
+
+            <div id="proofreadSection">
+                <div class="section-header">
+                    <h2>Revision</h2>
+                </div>
+                <div id="proofreadContent" class="document-content"></div>
+            </div>
         </div>
-        <a id="downloadLink" style="display: none;" download>Download Proofread DOCX</a>
     </div>
 
     <script src="sidebar.js"></script>
