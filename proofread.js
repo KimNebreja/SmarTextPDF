@@ -44,32 +44,28 @@ function updateZoom() {
 // Text-to-speech functionality using Google TTS (Female Voice)
 let isSpeaking = false;
 
-audioControl.addEventListener('click', () => {
-    const synth = window.speechSynthesis;
-    const text = proofreadContent.textContent;
-    
-    if (!isSpeaking) {
-        const utterance = new SpeechSynthesisUtterance(text);
+ function speakText() {
+            let text = document.getElementById("textToSpeak").value;
+            let speech = new SpeechSynthesisUtterance(text);
 
-        // Get available voices
-        const voices = synth.getVoices();
-        
-        // Select a Google Female Voice if available
-        const googleFemaleVoice = voices.find(voice => voice.name.includes('Google') && voice.name.includes('Female'));
-        const fallbackFemaleVoice = voices.find(voice => voice.gender === "female") || voices[0];
+            let voices = window.speechSynthesis.getVoices();
+            let femaleVoice = voices.find(voice => voice.name.includes("Female") || voice.voiceURI.includes("Female"));
 
-        // Assign the chosen voice
-        utterance.voice = googleFemaleVoice || fallbackFemaleVoice;
+            if (femaleVoice) {
+                speech.voice = femaleVoice;
+            } else {
+                console.log("No specific female voice found, using default.");
+            }
 
-        synth.speak(utterance);
-        audioControl.querySelector('i').classList.replace('bxs-volume-full', 'bx-volume-full');
-    } else {
-        synth.cancel();
-        audioControl.querySelector('i').classList.replace('bx-volume-full', 'bxs-volume-full');
-    }
+            speech.rate = 1.0; // Adjust speed
+            speech.pitch = 1.2; // Higher pitch makes it sound more feminine
+            window.speechSynthesis.speak(speech);
+        }
 
-    isSpeaking = !isSpeaking;
-});
+        // Ensure voices are loaded before calling getVoices()
+        window.speechSynthesis.onvoiceschanged = () => {
+            console.log(window.speechSynthesis.getVoices());
+        };
 
 // Ensure voices are loaded before selecting
 window.speechSynthesis.onvoiceschanged = () => {
