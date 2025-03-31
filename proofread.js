@@ -41,94 +41,30 @@ function updateZoom() {
     proofreadContent.style.fontSize = `${currentZoom}%`;
 }
 
- function speakProofreadContent() {
-    let contentElement = document.getElementById("proofreadContent");
-
-    if (!contentElement) {
-        alert("Content section not found.");
-        return;
-    }
-
-    let content = contentElement.innerText.trim(); // Get actual text
-
-    if (!content) {
-        alert("No text available to read.");
-        return;
-    }
-
-    let speech = new SpeechSynthesisUtterance(content);
-
-    // Get available voices
-    let voices = window.speechSynthesis.getVoices();
-
-    // Choose a female voice
-    let femaleVoice = voices.find(voice => 
-        voice.name.includes("Google UK English Female") || 
-        voice.name.includes("Google US English") || 
-        voice.name.includes("Samantha") || 
-        voice.name.includes("Microsoft Zira")
-    );
-
-    if (femaleVoice) {
-        speech.voice = femaleVoice;
-        console.log("Using voice:", femaleVoice.name);
-    } else {
-        console.log("No specific female voice found, using default.");
-    }
-
-    speech.rate = 1.0;  // Adjust speed (1.0 = normal)
-    speech.pitch = 1.2; // Slightly higher pitch for a more feminine tone
-
-    window.speechSynthesis.speak(speech);
-}
-
-if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.onvoiceschanged = setVoice;
-    } else {
-        setVoice();
-    }
-};
 
 
+ function speakText() {
+            let text = document.getElementById("proofreadContent").value;
+            let speech = new SpeechSynthesisUtterance(text);
 
- function speakProofreadContent() {
-    let content = document.getElementById("proofreadContent").textContent.trim();
-    
-    if (!content) {
-        alert("No text available to read.");
-        return;
-    }
+            let voices = window.speechSynthesis.getVoices();
+            let femaleVoice = voices.find(voice => voice.name.includes("Female") || voice.voiceURI.includes("Female"));
 
-    let speech = new SpeechSynthesisUtterance(content);
+            if (femaleVoice) {
+                speech.voice = femaleVoice;
+            } else {
+                console.log("No specific female voice found, using default.");
+            }
 
-    // Get available voices
-    let voices = window.speechSynthesis.getVoices();
+            speech.rate = 1.0; // Adjust speed
+            speech.pitch = 1.2; // Higher pitch makes it sound more feminine
+            window.speechSynthesis.speak(speech);
+        }
 
-    // Choose a female voice
-    let femaleVoice = voices.find(voice => 
-        voice.name.includes("Google UK English Female") || 
-        voice.name.includes("Google US English") || 
-        voice.name.includes("Samantha") || 
-        voice.name.includes("Microsoft Zira")
-    );
-
-    if (femaleVoice) {
-        speech.voice = femaleVoice;
-        console.log("Using voice:", femaleVoice.name);
-    } else {
-        console.log("No specific female voice found, using default.");
-    }
-
-    speech.rate = 1.0;  // Adjust speed (1.0 = normal)
-    speech.pitch = 1.2; // Slightly higher pitch for a more feminine tone
-
-    window.speechSynthesis.speak(speech);
-}
-
-// Ensure voices are loaded
-window.speechSynthesis.onvoiceschanged = () => {
-    console.log("Available voices:", window.speechSynthesis.getVoices());
-};
+        // Ensure voices are loaded before calling getVoices()
+        window.speechSynthesis.onvoiceschanged = () => {
+            console.log(window.speechSynthesis.getVoices());
+        };
 
 
 
