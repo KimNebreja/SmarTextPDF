@@ -42,32 +42,6 @@ function updateZoom() {
 }
 
 
-
- function speakText() {
-            let text = document.getElementById("proofreadContent").value;
-            let speech = new SpeechSynthesisUtterance(text);
-
-            let voices = window.speechSynthesis.getVoices();
-            let femaleVoice = voices.find(voice => voice.name.includes("Female") || voice.voiceURI.includes("Female"));
-
-            if (femaleVoice) {
-                speech.voice = femaleVoice;
-            } else {
-                console.log("No specific female voice found, using default.");
-            }
-
-            speech.rate = 1.0; // Adjust speed
-            speech.pitch = 1.2; // Higher pitch makes it sound more feminine
-            window.speechSynthesis.speak(speech);
-        }
-
-        // Ensure voices are loaded before calling getVoices()
-        window.speechSynthesis.onvoiceschanged = () => {
-            console.log(window.speechSynthesis.getVoices());
-        };
-
-
-
 // Function to highlight differences
 function highlightDifferences(original, proofread) {
     const words1 = original.split(/\s+/);
