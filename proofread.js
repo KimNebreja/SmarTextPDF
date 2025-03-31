@@ -41,81 +41,42 @@ function updateZoom() {
     proofreadContent.style.fontSize = `${currentZoom}%`;
 }
 
-// Text-to-speech functionality
+// Text-to-speech functionality using Google TTS (Female Voice)
 let isSpeaking = false;
-let voices = [];
-let currentUtterance = null;
-
-// Load voices when they become available
-function loadVoices() {
-    voices = window.speechSynthesis.getVoices();
-    // Find Google voices
-    const googleVoices = voices.filter(voice => voice.name.includes('Google'));
-    if (googleVoices.length > 0) {
-        // Prefer a female Google voice if available
-        const femaleGoogleVoice = googleVoices.find(voice => voice.name.includes('Female'));
-        if (femaleGoogleVoice) {
-            return femaleGoogleVoice;
-        }
-        // Fall back to first Google voice
-        return googleVoices[0];
-    }
-    return null;
-}
-
-// Initialize voices
-window.speechSynthesis.onvoiceschanged = loadVoices;
-
-// Handle speech synthesis events
-function setupSpeechEvents(utterance) {
-    utterance.onend = () => {
-        isSpeaking = false;
-        audioControl.querySelector('i').classList.replace('bx-volume-full', 'bxs-volume-full');
-    };
-
-    utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
-        isSpeaking = false;
-        audioControl.querySelector('i').classList.replace('bx-volume-full', 'bxs-volume-full');
-    };
-
-    utterance.onpause = () => {
-        isSpeaking = false;
-        audioControl.querySelector('i').classList.replace('bx-volume-full', 'bxs-volume-full');
-    };
-}
 
 audioControl.addEventListener('click', () => {
+    const synth = window.speechSynthesis;
+    const text = proofreadContent.textContent;
+    
     if (!isSpeaking) {
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        // Get available voices
+        const voices = synth.getVoices();
         
-        const text = proofreadContent.textContent;
-        currentUtterance = new SpeechSynthesisUtterance(text);
-        
-        // Get Google voice
-        const googleVoice = loadVoices();
-        if (googleVoice) {
-            currentUtterance.voice = googleVoice;
-        }
-        
-        // Set speech rate and pitch for better clarity
-        currentUtterance.rate = 0.9;  // Slightly slower rate
-        currentUtterance.pitch = 1.0; // Normal pitch
-        
-        // Setup event handlers
-        setupSpeechEvents(currentUtterance);
-        
-        // Start speaking
-        window.speechSynthesis.speak(currentUtterance);
+        // Select a Google Female Voice if available
+        const googleFemaleVoice = voices.find(voice => voice.name.includes('Google') && voice.name.includes('Female'));
+        const fallbackFemaleVoice = voices.find(voice => voice.gender === "female") || voices[0];
+
+        // Assign the chosen voice
+        utterance.voice = googleFemaleVoice || fallbackFemaleVoice;
+
+        synth.speak(utterance);
         audioControl.querySelector('i').classList.replace('bxs-volume-full', 'bx-volume-full');
-        isSpeaking = true;
     } else {
-        window.speechSynthesis.cancel();
+        synth.cancel();
         audioControl.querySelector('i').classList.replace('bx-volume-full', 'bxs-volume-full');
-        isSpeaking = false;
     }
+
+    isSpeaking = !isSpeaking;
 });
+
+// Ensure voices are loaded before selecting
+window.speechSynthesis.onvoiceschanged = () => {
+    const voices = window.speechSynthesis.getVoices();
+    console.log('Available voices:', voices);
+};
+
 
 // Function to highlight differences
 function highlightDifferences(original, proofread) {
