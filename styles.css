@@ -94,9 +94,7 @@ body {
     z-index: 999;
     transition: background-color 0.3s;
 }
-.external-toggle:hover {
-    background-color: #f4e8d9;
-}
+
 .external-toggle i {
     font-size: 25px;
     color: #332219;
@@ -173,6 +171,8 @@ input, button {
     margin: 45px auto;
     padding: 20px;
     box-sizing: border-box;
+    position: relative;
+    min-height: 300px;
 }
 #uploadForm button {
     background-color: #332219;
@@ -636,5 +636,32 @@ textarea {
     background-color: #4a321f;
     cursor: wait;
 }
+/* Upload status */
+.upload-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: none;
+    width: 80%;
+    max-width: 300px;
+    padding: 20px;
+}
 
+.upload-status.show {
+    display: block;
+}
 
+.upload-status p {
+    margin: 0;
+    color: #545454;
+    font-size: 30px;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+
+#uploadForm.hide {
+    display: none;
+}
