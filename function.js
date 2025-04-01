@@ -1,8 +1,14 @@
 // DOM Elements
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('pdfFile');
-const status = document.getElementById('status');
 const uploadButton = document.querySelector('.upload-button');
+const uploadContainer = document.querySelector('.upload-container');
+
+// Create and append upload status element
+const uploadStatus = document.createElement('div');
+uploadStatus.className = 'upload-status';
+uploadStatus.innerHTML = `<p>Uploading...</p>`;
+uploadContainer.appendChild(uploadStatus);
 
 // State Management
 let isUploading = false;
@@ -10,34 +16,69 @@ let isUploading = false;
 // File Upload Functionality
 function validateFile(file) {
     if (!file) {
-        updateStatus("Please select a file", true);
+        alert("Please select a file");
         return false;
     }
     if (file.type !== 'application/pdf') {
-        updateStatus("Please upload a PDF file", true);
+        alert("Please upload a PDF file");
         return false;
     }
     if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        updateStatus("File size should be less than 10MB", true);
+        alert("File size should be less than 10MB");
         return false;
     }
     return true;
 }
 
-function updateStatus(message, isError = false) {
-    status.innerText = message;
-    status.style.color = isError ? '#ff4444' : '#332219';
-    uploadForm.classList.toggle('uploading', !isError);
+function showUploadStatus(show) {
+    uploadForm.classList.toggle('hide', show);
+    uploadStatus.classList.toggle('show', show);
 }
 
-function handleFiles(files) {
-    if (files.length === 0) return;
-    
-    const file = files[0];
+// Handle file upload to server
+async function handleFileUpload(file) {
     if (!validateFile(file)) return;
+    if (isUploading) return;
 
-    if (!isUploading) {
-        handleFormSubmit();
+    try {
+        isUploading = true;
+        showUploadStatus(true);
+        uploadButton.disabled = true;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('https://pdf-docs.onrender.com/convert', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.original_text || !data.proofread_text) {
+            throw new Error('Missing required text data from server');
+        }
+
+        // Store the data in localStorage
+        localStorage.setItem('originalData', JSON.stringify({
+            original_text: data.original_text
+        }));
+        localStorage.setItem('proofreadData', JSON.stringify(data));
+
+        // Redirect to proofread page
+        window.location.href = 'proofread.html';
+
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert(error.message || 'An error occurred during upload');
+    } finally {
+        isUploading = false;
+        uploadButton.disabled = false;
+        showUploadStatus(false);
     }
 }
 
@@ -58,82 +99,38 @@ function unhighlight(e) {
 function handleDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
-    fileInput.files = files;
-    handleFiles(files);
-}
-
-// Form Submission
-async function handleFormSubmit() {
-    if (isUploading) return;
-    if (!fileInput.files.length) {
-        updateStatus("Please select a file", true);
-        return;
-    }
-
-    const file = fileInput.files[0];
-    if (!validateFile(file)) return;
-
-    isUploading = true;
-    updateStatus("Uploading...");
-    uploadForm.classList.add('uploading');
-    uploadButton.disabled = true;
-
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('https://pdf-docs.onrender.com/convert', { 
-            method: 'POST', 
-            body: formData 
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Server response:', data);
-
-        if (!data.original_text || !data.proofread_text) {
-            throw new Error('Missing required text data from server');
-        }
-        
-        // Store the data in localStorage
-        localStorage.setItem('proofreadData', JSON.stringify(data));
-        localStorage.setItem('originalData', JSON.stringify({
-            original_text: data.original_text
-        }));
-        
-        // Redirect to proofread page
-        window.location.href = 'proofread.html';
-
-    } catch (error) {
-        console.error('Upload error:', error);
-        updateStatus("Error: " + error.message, true);
-    } finally {
-        isUploading = false;
-        uploadForm.classList.remove('uploading');
-        uploadButton.disabled = false;
+    
+    if (files.length > 0) {
+        handleFileUpload(files[0]);
     }
 }
 
 // Event Listeners
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    uploadForm.addEventListener(eventName, preventDefaults, false);
-});
+document.addEventListener('DOMContentLoaded', function() {
+    // File input change
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileUpload(e.target.files[0]);
+        }
+    });
 
-['dragenter', 'dragover'].forEach(eventName => {
-    uploadForm.addEventListener(eventName, highlight, false);
-});
+    // Upload button click
+    uploadButton.addEventListener('click', function() {
+        fileInput.click();
+    });
 
-['dragleave', 'drop'].forEach(eventName => {
-    uploadForm.addEventListener(eventName, unhighlight, false);
-});
+    // Drag and drop events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadForm.addEventListener(eventName, preventDefaults, false);
+    });
 
-uploadForm.addEventListener('drop', handleDrop, false);
-fileInput.addEventListener('change', function() {
-    handleFiles(this.files);
-});
-uploadButton.addEventListener('click', function() {
-    fileInput.click();
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadForm.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadForm.addEventListener(eventName, unhighlight, false);
+    });
+
+    uploadForm.addEventListener('drop', handleDrop, false);
 });
