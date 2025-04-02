@@ -12,7 +12,6 @@ const downloadBtn = document.getElementById('downloadBtn');
 const zoomInBtn = document.getElementById('zoomIn');
 const zoomOutBtn = document.getElementById('zoomOut');
 const audioControl = document.querySelector('.audio-control');
-
 // Zoom state
 let currentZoom = 100;
 const MIN_ZOOM = 50;
@@ -40,8 +39,6 @@ function updateZoom() {
     originalContent.style.fontSize = `${currentZoom}%`;
     proofreadContent.style.fontSize = `${currentZoom}%`;
 }
-
-
 
 // Function to highlight differences
 function highlightDifferences(original, proofread) {
@@ -86,12 +83,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Highlight differences and display text
+        // Get the file name from localStorage or use default
+        const fileName = proofData.file_name || 'For Proofread.pdf';
+        
+        // Update file name in both places
+        const initialFile = document.querySelector('.uploaded-file');
+        if (initialFile) {
+            initialFile.querySelector('.file-name').textContent = fileName;
+            initialFile.dataset.originalText = orgData.original_text;
+            initialFile.dataset.proofreadText = proofData.proofread_text;
+            initialFile.dataset.fileName = fileName;
+            if (proofData.download_url) {
+                initialFile.dataset.downloadUrl = proofData.download_url;
+            }
+            
+            // Make initial file active
+            initialFile.classList.add('active');
+        }
+        
+        document.querySelector('#originalSection .section-header h2').textContent = fileName;
+
+        // Highlight differences 
         const { originalHtml, proofreadHtml } = highlightDifferences(
             orgData.original_text,
             proofData.proofread_text
         );
 
+        // Set up content
         originalContent.innerHTML = originalHtml;
         proofreadContent.innerHTML = proofreadHtml;
 
@@ -113,7 +131,206 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error displaying content:', error);
         window.location.href = 'index.html';
     }
-}); 
+
+    // New File and Delete Functionality
+    const newFileBtn = document.querySelector('.new-file-btn');
+    const newFileInput = document.getElementById('newFileInput');
+    const deleteFileBtn = document.querySelector('.delete-file-btn');
+
+    // New File button click handler
+    newFileBtn.addEventListener('click', () => {
+        newFileInput.click();
+    });
+
+    // Add click handler to initial file
+    const initialFile = document.querySelector('.uploaded-file');
+    if (initialFile) {
+        initialFile.addEventListener('click', (e) => {
+            // Don't trigger if clicking the delete button
+            if (e.target.closest('.delete-file-btn')) return;
+            
+            // Remove active class from all files
+            document.querySelectorAll('.uploaded-file').forEach(f => f.classList.remove('active'));
+            // Add active class to clicked file
+            initialFile.classList.add('active');
+
+            // Update content
+            const { originalHtml, proofreadHtml } = highlightDifferences(
+                initialFile.dataset.originalText,
+                initialFile.dataset.proofreadText
+            );
+
+            originalContent.innerHTML = originalHtml;
+            proofreadContent.innerHTML = proofreadHtml;
+            document.querySelector('#originalSection .section-header h2').textContent = initialFile.dataset.fileName;
+
+            // Update download button
+            if (initialFile.dataset.downloadUrl) {
+                downloadBtn.onclick = () => {
+                    window.location.href = 'https://pdf-docs.onrender.com' + initialFile.dataset.downloadUrl;
+                };
+            }
+        });
+    }
+
+    // Handle file selection
+    newFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file
+        if (file.type !== 'application/pdf') {
+            alert("Please upload a PDF file");
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            alert("File size should be less than 10MB");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Create new uploaded file element with the actual file name
+            const newUploadedFile = document.createElement('div');
+            newUploadedFile.className = 'uploaded-file';
+            newUploadedFile.innerHTML = `
+                <i class='bx bx-file bx-flip-horizontal'></i>
+                <span class="file-name">${file.name}</span>
+                <button class="delete-file-btn">
+                    <i class='bx bx-trash'></i>
+                </button>
+            `;
+
+            // Add loading state
+            newUploadedFile.querySelector('.file-name').textContent = 'Uploading...';
+            newFileBtn.disabled = true;
+
+            // Add the new file element to the container
+            const uploadedFilesContainer = document.querySelector('.uploaded-files-container');
+            uploadedFilesContainer.appendChild(newUploadedFile);
+
+            const response = await fetch('https://pdf-docs.onrender.com/convert', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (!data.original_text || !data.proofread_text) {
+                throw new Error('Missing required text data from server');
+            }
+
+            // Store the file data in the element
+            newUploadedFile.dataset.originalText = data.original_text;
+            newUploadedFile.dataset.proofreadText = data.proofread_text;
+            newUploadedFile.dataset.fileName = file.name;
+            if (data.download_url) {
+                newUploadedFile.dataset.downloadUrl = data.download_url;
+            }
+
+            // Update the displayed content
+            const { originalHtml, proofreadHtml } = highlightDifferences(
+                data.original_text,
+                data.proofread_text
+            );
+
+            // Remove active class from all files
+            document.querySelectorAll('.uploaded-file').forEach(f => f.classList.remove('active'));
+            // Add active class to new file
+            newUploadedFile.classList.add('active');
+
+            originalContent.innerHTML = originalHtml;
+            proofreadContent.innerHTML = proofreadHtml;
+
+            // Update file name in section header with the actual file name
+            document.querySelector('#originalSection .section-header h2').textContent = file.name;
+            // Update the file name in the uploaded file element
+            newUploadedFile.querySelector('.file-name').textContent = file.name;
+
+            // Add click handler to the file element
+            newUploadedFile.addEventListener('click', (e) => {
+                // Don't trigger if clicking the delete button
+                if (e.target.closest('.delete-file-btn')) return;
+                
+                // Remove active class from all files
+                document.querySelectorAll('.uploaded-file').forEach(f => f.classList.remove('active'));
+                // Add active class to clicked file
+                newUploadedFile.classList.add('active');
+
+                // Update content
+                const { originalHtml, proofreadHtml } = highlightDifferences(
+                    newUploadedFile.dataset.originalText,
+                    newUploadedFile.dataset.proofreadText
+                );
+
+                originalContent.innerHTML = originalHtml;
+                proofreadContent.innerHTML = proofreadHtml;
+                document.querySelector('#originalSection .section-header h2').textContent = newUploadedFile.dataset.fileName;
+
+                // Update download button
+                if (newUploadedFile.dataset.downloadUrl) {
+                    downloadBtn.onclick = () => {
+                        window.location.href = 'https://pdf-docs.onrender.com' + newUploadedFile.dataset.downloadUrl;
+                    };
+                }
+            });
+
+            // Update download button if URL is available
+            if (data.download_url) {
+                downloadBtn.onclick = () => {
+                    window.location.href = 'https://pdf-docs.onrender.com' + data.download_url;
+                };
+            }
+
+            // Reset zoom
+            currentZoom = 100;
+            updateZoom();
+
+            // Add delete functionality to the new file
+            const newDeleteBtn = newUploadedFile.querySelector('.delete-file-btn');
+            newDeleteBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this file?')) {
+                    newUploadedFile.remove();
+                    // If this was the last file, redirect to home page
+                    if (uploadedFilesContainer.children.length === 0) {
+                        window.location.href = 'index.html';
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert(error.message || 'An error occurred during upload');
+            // Remove the failed upload element
+            const failedUpload = document.querySelector('.uploaded-file:last-child');
+            if (failedUpload) {
+                failedUpload.remove();
+            }
+        } finally {
+            newFileBtn.disabled = false;
+            newFileInput.value = ''; // Reset file input
+        }
+    });
+
+    // Delete file button click handler for initial file
+    deleteFileBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete this file?')) {
+            const uploadedFilesContainer = document.querySelector('.uploaded-files-container');
+            const currentFile = document.querySelector('.uploaded-file');
+            currentFile.remove();
+            // If this was the last file, redirect to home page
+            if (uploadedFilesContainer.children.length === 0) {
+                window.location.href = 'index.html';
+            }
+        }
+    });
+});
 
 //Text-to-Speech Functionality
 let speechInstance = null;
