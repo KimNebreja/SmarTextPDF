@@ -6,7 +6,6 @@
     <title>Proofread Result - SmarText PDF</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,6 +16,19 @@
             </a>
             <div class="hamburger" id="hamburger">
                 <i class='bx bx-sidebar'></i>
+            </div>
+        </div>
+        <div class="file-actions">
+            <input type="file" id="newFileInput" accept=".pdf" style="display: none;">
+            <button class="new-file-btn">+ New File</button>
+            <div class="uploaded-files-container">
+                <div class="uploaded-file">
+                    <i class='bx bx-file bx-flip-horizontal' ></i>
+                    <span class="file-name">For Proofread.pdf</span>
+                    <button class="delete-file-btn">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="sidebar-file-style-icon">
@@ -41,10 +53,10 @@
             </div>
             <div class="controls-right">
                 <button id="speechButton" onclick="toggleSpeech()" class="audio-control">
-                    <i id="speechIcon" class='bx bxs-volume-full' ></i>
+                    <i id="speechIcon" class='bx bxs-volume-full'></i>
                 </button>
                 <button id="pauseButton" onclick="pauseSpeech()" style="display: none;" class="audio-control">
-                    <i class='bx bx-pause' ></i>
+                    <i class='bx bx-pause'></i>
                 </button>
                 <button id="downloadBtn" class="download-control">
                     <i class='bx bx-download'></i>
@@ -53,14 +65,14 @@
         </div>
 
         <div class="document-container">
-            <div id="originalSection">
+            <div id="originalSection" class="content-section">
                 <div class="section-header">
                     <h2>For Proofread.pdf</h2>
                 </div>
                 <div id="originalContent" class="document-content"></div>
             </div>
 
-            <div id="proofreadSection">
+            <div id="proofreadSection" class="content-section">
                 <div class="section-header">
                     <h2>Revision</h2>
                 </div>
