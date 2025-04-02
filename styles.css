@@ -3,10 +3,9 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
 }
 .main-content p {
     font-size: 18px;
@@ -103,7 +102,7 @@ body {
     display: flex;
 }
 .signup-btn {
-    margin-top: -450px;
+    margin-top: 0;
     padding: 8px;
     text-align: center;
 }
@@ -131,19 +130,19 @@ body {
     padding: 0 22px;
 }
 .main-content {
-    margin-left: 250px;
-    padding: 0;
-    width: calc(100% - 250px);
+    margin-left: 254px;
+    width: calc(100vw - 254px);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    box-sizing: border-box;
     background: #f5f5f5;
+    overflow-x: hidden;
+    position: relative;
 }
 .main-content.expanded {
     margin-left: 0;
-    width: 100%;
+    width: 100vw;
 }
 #uploadForm { 
     margin: 0 auto;
@@ -226,6 +225,9 @@ textarea {
     padding: 5px 16px;
     background: white;
     border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+    box-sizing: border-box;
+    height: 56px;
 }
 
 .controls-right {
@@ -277,6 +279,8 @@ textarea {
     background: #332219;
     padding: 0;
     gap: 1px;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 #originalSection, #proofreadSection {
@@ -285,13 +289,17 @@ textarea {
     flex-direction: column;
     padding: 0px 30px 45px;
     background: white;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 101px);
+    min-width: 0;
+    max-width: 50%;
 }
 
 .section-header {
     padding: 12px 16px;
     background: white;
     border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .section-header h2 {
@@ -303,12 +311,16 @@ textarea {
 
 .document-content {
     flex: 1;
-    padding: 40px;
+    padding: 20px;
     overflow-y: auto;
+    overflow-x: hidden;
     border: 0.5px solid lightgray;
     background: white;
     line-height: 1.6;
     font-size: 14px;
+    word-wrap: break-word;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Text highlighting styles */
@@ -347,17 +359,7 @@ textarea {
     }
     .main-content {
         margin-left: 225px;
-        width: calc(100% - 225px);
-    }
-    .logo {
-        height: 40px;
-    }
-    .file-style-icon {
-        width: 140px;
-        height: 140px;
-    }
-    .upload-container {
-        width: 85%;
+        width: calc(100vw - 225px);
     }
 }
 
@@ -367,77 +369,33 @@ textarea {
     }
     .main-content {
         margin-left: 200px;
-        width: calc(100% - 200px);
-    }
-    .logo {
-        height: 36px;
-    }
-    .file-style-icon {
-        width: 120px;
-        height: 120px;
-    }
-    .hamburger i {
-        font-size: 22px;
-    }
-    .upload-container {
-        width: 90%;
-    }
-    #uploadForm {
-        padding: 20px;
+        width: calc(100vw - 200px);
     }
     .document-container {
         flex-direction: column;
     }
-
     #originalSection, #proofreadSection {
+        max-width: 100%;
         height: 50vh;
     }
 }
 
 @media screen and (max-width: 768px) {
     .sidebar {
-        width: 180px;
         transform: translateX(-100%);
     }
-    
     .sidebar.active {
         transform: translateX(0);
     }
-    
     .main-content {
         margin-left: 0;
-        width: 100%;
+        width: 100vw;
+    }
+    .document-content {
         padding: 15px;
     }
-    
-    .logo-container {
-        padding: 16px 12px;
-    }
-    
-    .logo {
-        height: 32px;
-    }
-    
-    .file-style-icon {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .hamburger {
-        padding: 6px;
-    }
-    
-    .hamburger i {
-        font-size: 20px;
-    }
-    
-    .upload-container {
-        width: 95%;
-        padding: 15px;
-    }
-    
-    #uploadForm {
-        padding: 15px;
+    #originalSection, #proofreadSection {
+        height: calc(50vh - 28px);
     }
     
     .external-toggle {
@@ -447,60 +405,16 @@ textarea {
     }
     
     .sidebar.active + .external-toggle {
-        transform: translateX(180px);
-    }
-    
-    .main-content p {
-        font-size: 16px;
-        margin-top: -8px;
-    }
-
-    .document-controls {
-        padding: 8px;
-    }
-
-    .zoom-controls button {
-        padding: 4px 8px;
-    }
-
-    .document-content {
-        padding: 20px;
+        transform: translateX(200px);
     }
 }
 
 @media screen and (max-width: 480px) {
-    .sidebar {
-        width: 160px;
-    }
-    
-    .logo-container {
-        padding: 12px 8px;
-    }
-    
-    .logo {
-        height: 28px;
-    }
-    
-    .file-style-icon {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .hamburger {
-        padding: 4px;
-    }
-    
-    .hamburger i {
-        font-size: 18px;
-    }
-    
-    .upload-container {
-        width: 100%;
+    .document-content {
         padding: 10px;
     }
-    
-    #uploadForm {
-        padding: 10px;
+    .section-header {
+        padding: 8px 12px;
     }
     
     .external-toggle {
@@ -510,15 +424,6 @@ textarea {
     
     .sidebar.active + .external-toggle {
         transform: translateX(160px);
-    }
-    
-    .main-content p {
-        font-size: 14px;
-        margin-top: -6px;
-    }
-    
-    textarea {
-        height: 150px;
     }
 }
 
@@ -571,6 +476,8 @@ textarea {
     align-items: center;
     padding: 20px;
     margin: auto 0;
+    margin-top: auto;
+    margin-bottom: 20px;
 }
 
 .file-style-icon {
@@ -664,4 +571,141 @@ textarea {
 
 #uploadForm.hide {
     display: none;
+}
+
+/* File Actions Styles */
+.file-actions {
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.uploaded-files-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 8px;
+}
+
+/* Custom scrollbar for uploaded-files-container */
+.uploaded-files-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.uploaded-files-container::-webkit-scrollbar-track {
+    background: rgba(244, 232, 217, 0.1);
+    border-radius: 3px;
+}
+
+.uploaded-files-container::-webkit-scrollbar-thumb {
+    background: rgba(244, 232, 217, 0.3);
+    border-radius: 3px;
+}
+
+.uploaded-files-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(244, 232, 217, 0.5);
+}
+
+/* Ensure new file button stays at top */
+.new-file-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    padding: 18px;
+    border-radius: 12px;
+    border: 2px solid #f4e8d9;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.new-file-btn:hover {
+    background-color: rgba(244, 232, 217, 0.1);
+}
+
+.new-file-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.new-file-btn:disabled:hover {
+    background-color: transparent;
+}
+
+.uploaded-file {
+    background-color: #d9d9d9;
+    border-radius: 12px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.uploaded-file:hover {
+    background-color: #e6e6e6;
+
+}
+
+.uploaded-file.active {
+    background-color: #f4e8d9;
+    border: 1px solid #332219;
+}
+
+.uploaded-file i{
+    background: transparent;
+    border: none;
+    color: black;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.file-name {
+    color: black;
+    font-size: 12px;
+    font-weight: 500;
+    align-items: left;
+    flex-grow: 1;
+    margin: 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.delete-file-btn {
+    background: transparent;
+    border: none;
+    color: black;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    z-index: 2;
+}
+
+.delete-file-btn:hover {
+    background-color: rgba(244, 232, 217, 0.1);
+}
+
+.delete-file-btn i {
+    font-size: 20px;
 }
