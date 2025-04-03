@@ -63,9 +63,10 @@ async function handleFileUpload(file) {
             throw new Error('Missing required text data from server');
         }
 
-        // Store the data in localStorage
+        // Store the data in localStorage with the file name
         localStorage.setItem('originalData', JSON.stringify({
-            original_text: data.original_text
+            original_text: data.original_text,
+            file_name: file.name // Add the file name to the original data
         }));
         localStorage.setItem('proofreadData', JSON.stringify(data));
 
