@@ -83,13 +83,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Get the file name from localStorage or use default
-        const fileName = proofData.file_name || 'For Proofread.pdf';
+        // Get the file name from the original file data
+        const fileName = orgData.file_name || proofData.file_name ;
         
         // Update file name in both places
         const initialFile = document.querySelector('.uploaded-file');
         if (initialFile) {
+            // Update the file name in the uploaded file element
             initialFile.querySelector('.file-name').textContent = fileName;
+            // Store the file data
             initialFile.dataset.originalText = orgData.original_text;
             initialFile.dataset.proofreadText = proofData.proofread_text;
             initialFile.dataset.fileName = fileName;
@@ -101,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             initialFile.classList.add('active');
         }
         
+        // Update the section header with the actual file name
         document.querySelector('#originalSection .section-header h2').textContent = fileName;
 
         // Highlight differences 
