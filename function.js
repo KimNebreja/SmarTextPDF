@@ -48,7 +48,8 @@ async function handleFileUpload(file) {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('https://pdf-docs.onrender.com/convert', {
+        const response = await fetch('https://pixelJosh.hf.space/SmartTextPDF/extract-text/
+', {
             method: 'POST',
             body: formData
         });
