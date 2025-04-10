@@ -7,7 +7,11 @@ const uploadContainer = document.querySelector('.upload-container');
 // Create and append upload status element
 const uploadStatus = document.createElement('div');
 uploadStatus.className = 'upload-status';
-uploadStatus.innerHTML = `<p>Uploading...</p>`;
+uploadStatus.innerHTML = 
+`<p>Uploading...<p>
+<div class="loader-container">
+<i class='bx bx-loader-circle bx-spin' ></i>
+</div>`;
 uploadContainer.appendChild(uploadStatus);
 
 // State Management
