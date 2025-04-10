@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
 
             // Add loading state
-            newUploadedFile.querySelector('.file-name').textContent =             
+            newUploadedFile.querySelector('.file-name').innerHTML = 
             `Uploading  <i class='bx bx-loader-circle bx-spin' ></i>`;
             newFileBtn.disabled = true;
 
