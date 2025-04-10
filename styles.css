@@ -569,6 +569,14 @@ textarea {
     z-index: 1;
 }
 
+.upload-status .loader-container {
+    font-size: 40px;
+    margin-left: 10px;
+    color: #545454;
+    position: relative;
+    z-index: 1;
+}
+
 #uploadForm.hide {
     display: none;
 }
@@ -680,12 +688,13 @@ textarea {
     color: black;
     font-size: 12px;
     font-weight: 500;
-    align-items: left;
     flex-grow: 1;
     margin: 0 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
 }
 
 .delete-file-btn {
