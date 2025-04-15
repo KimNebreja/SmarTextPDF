@@ -57,12 +57,11 @@ async function handleFileUpload(file) {
             body: formData
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        }
         
         if (!data.original_text || !data.proofread_text) {
             throw new Error('Missing required text data from server');
