@@ -38,6 +38,135 @@ function initializeZoomControls() {
 function updateZoom() {
     originalContent.style.fontSize = `${currentZoom}%`;
     proofreadContent.style.fontSize = `${currentZoom}%`;
+    document.querySelector('.zoom-percentage').textContent = `${currentZoom}%`;
+}
+
+// Word suggestions for common words and phrases
+const wordSuggestions = {
+    'advancement': ['progress', 'development', 'improvement', 'evolution', 'enhancement', 'growth', 'advancement', 'progression', 'breakthrough', 'forward movement'],
+    'technology': ['innovation', 'technical advancement', 'digital solutions', 'technological tools', 'digital technology', 'tech innovations', 'technological systems', 'technical infrastructure', 'digital framework', 'technological capabilities'],
+    'brought': ['introduced', 'delivered', 'yielded', 'led to', 'resulted in', 'generated', 'created', 'produced', 'initiated', 'established'],
+    'transformed': ['revolutionized', 'reshaped', 'changed', 'modernized', 'remodeled', 'renovated', 'overhauled', 'reinvented', 'reconstructed', 'reconfigured'],
+    'in addition': ['furthermore', 'moreover', 'additionally', 'besides this', 'what is more', 'as well as', 'along with this', 'also'],
+    'for example': ['for instance', 'as an illustration', 'to demonstrate', 'specifically', 'namely', 'such as', 'particularly'],
+    'in order to': ['to', 'so as to', 'with the aim of', 'for the purpose of', 'with the intention of', 'with a view to'],
+    'as a result': ['consequently', 'therefore', 'thus', 'hence', 'as a consequence', 'accordingly', 'for this reason'],
+    'however': ['nevertheless', 'nonetheless', 'yet', 'still', 'on the other hand', 'conversely', 'despite this'],
+    'due to': ['because of', 'as a result of', 'owing to', 'on account of', 'thanks to', 'attributed to'],
+    'significantly': ['considerably', 'substantially', 'markedly', 'notably', 'remarkably', 'meaningfully', 'dramatically'],
+    'primarily': ['mainly', 'chiefly', 'predominantly', 'principally', 'largely', 'mostly', 'essentially'],
+    'furthermore': ['moreover', 'additionally', 'besides', 'in addition', 'what is more', 'also', 'further'],
+    'subsequently': ['afterwards', 'later', 'following this', 'thereafter', 'then', 'next', 'consequently'],
+    'particularly': ['especially', 'specifically', 'notably', 'in particular', 'chiefly', 'mainly', 'predominantly'],
+    'demonstrates': ['shows', 'indicates', 'proves', 'illustrates', 'reveals', 'establishes', 'confirms'],
+    'implemented': ['executed', 'carried out', 'put into effect', 'put into practice', 'realized', 'accomplished', 'achieved'],
+    'essential': ['crucial', 'vital', 'necessary', 'indispensable', 'fundamental', 'key', 'critical'],
+    'various': ['different', 'diverse', 'multiple', 'numerous', 'several', 'many', 'assorted'],
+    'effectively': ['efficiently', 'successfully', 'productively', 'competently', 'adequately', 'properly', 'appropriately'],
+    'consequently': ['therefore', 'as a result', 'thus', 'hence', 'accordingly', 'so', 'subsequently'],
+    'frequently': ['often', 'regularly', 'commonly', 'repeatedly', 'habitually', 'routinely', 'consistently'],
+    'in contrast': ['on the other hand', 'conversely', 'by comparison', 'on the contrary', 'however', 'alternatively'],
+    'in terms of': ['regarding', 'concerning', 'with respect to', 'with reference to', 'as regards', 'relating to'],
+    'in the context of': ['within the framework of', 'in relation to', 'with regard to', 'in connection with', 'as part of'],
+    'it is important to note': ['notably', 'significantly', 'it should be noted that', 'it is worth noting that', 'importantly'],
+    'on the basis of': ['based on', 'founded on', 'grounded in', 'according to', 'depending on', 'relying on'],
+    'with respect to': ['regarding', 'concerning', 'in relation to', 'pertaining to', 'as regards', 'in reference to'],
+    'in general': ['generally', 'broadly speaking', 'on the whole', 'overall', 'by and large', 'for the most part'],
+    'in particular': ['specifically', 'especially', 'particularly', 'notably', 'markedly', 'distinctly'],
+    'in conclusion': ['to conclude', 'finally', 'to sum up', 'in summary', 'to summarize', 'ultimately'],
+    'in other words': ['that is to say', 'to put it differently', 'namely', 'specifically', 'to clarify'],
+    'for instance': ['for example', 'as an illustration', 'to illustrate', 'such as', 'namely', 'specifically'],
+    'in fact': ['actually', 'indeed', 'as a matter of fact', 'in reality', 'truthfully', 'in truth'],
+    'according to': ['based on', 'as stated by', 'as reported by', 'as indicated by', 'in accordance with'],
+    'in addition to': ['besides', 'along with', 'as well as', 'together with', 'coupled with', 'furthermore'],
+    'as well as': ['in addition to', 'along with', 'besides', 'plus', 'together with', 'not to mention'],
+    'in spite of': ['despite', 'notwithstanding', 'regardless of', 'even though', 'although', 'nevertheless'],
+    'rather than': ['instead of', 'as opposed to', 'in preference to', 'in place of', 'versus'],
+    'such as': ['for example', 'for instance', 'like', 'including', 'specifically', 'particularly'],
+    'due to the fact that': ['because', 'since', 'as', 'given that', 'owing to the fact that'],
+    'in the event that': ['if', 'should', 'whenever', 'in case', 'provided that', 'assuming that'],
+    'on the whole': ['generally', 'overall', 'all things considered', 'by and large', 'in general'],
+    'as a matter of fact': ['actually', 'in fact', 'indeed', 'in reality', 'to tell the truth'],
+    'at the same time': ['simultaneously', 'concurrently', 'meanwhile', 'in parallel', 'together'],
+    'in this regard': ['concerning this', 'in this respect', 'on this point', 'regarding this', 'as for this'],
+    'to this end': ['for this purpose', 'with this goal', 'to achieve this', 'toward this goal'],
+    'in light of': ['considering', 'given', 'taking into account', 'in view of', 'because of'],
+    'in essence': ['basically', 'fundamentally', 'at its core', 'in basic terms', 'essentially'],
+    'in practice': ['practically', 'in reality', 'in actual fact', 'in real terms', 'realistically'],
+    'interact': ['engage', 'communicate', 'connect', 'interface', 'collaborate', 'work', 'participate', 'associate', 'network', 'cooperate'],
+    'society': ['community', 'population', 'civilization', 'social structure', 'public', 'humankind', 'social order', 'collective', 'social fabric', 'populace'],
+    'evident': ['clear', 'apparent', 'obvious', 'noticeable', 'visible', 'unmistakable', 'manifest', 'plain', 'distinct', 'conspicuous'],
+    'innovations': ['advancements', 'developments', 'breakthroughs', 'improvements', 'modernizations', 'upgrades', 'inventions', 'novelties', 'transformations', 'pioneering solutions'],
+    'enhanced': ['improved', 'upgraded', 'augmented', 'strengthened', 'boosted', 'elevated', 'amplified', 'refined', 'optimized', 'enriched'],
+    'significant': ['important', 'notable', 'substantial', 'considerable', 'major', 'crucial', 'essential', 'critical', 'fundamental', 'pivotal'],
+    'ensuring': ['guaranteeing', 'securing', 'confirming', 'safeguarding', 'maintaining', 'assuring', 'verifying', 'establishing', 'preserving', 'sustaining'],
+    'platforms': ['systems', 'applications', 'frameworks', 'environments', 'tools', 'solutions', 'interfaces', 'infrastructures', 'networks', 'ecosystems'],
+    'digital': ['electronic', 'computerized', 'online', 'virtual', 'cyber', 'tech-based', 'technological', 'automated', 'web-based', 'connected'],
+    'daily': ['everyday', 'regular', 'day-to-day', 'routine', 'frequent', 'constant', 'habitual', 'recurring', 'continual', 'ongoing'],
+    'basis': ['foundation', 'ground', 'framework', 'structure', 'system', 'arrangement', 'principle', 'core', 'groundwork', 'underpinning'],
+    'industries': ['sectors', 'businesses', 'enterprises', 'corporations', 'companies', 'fields', 'organizations', 'commercial entities', 'trade sectors', 'market segments'],
+    'reshaped': ['reformed', 'restructured', 'reorganized', 'redefined', 'transformed', 'remodeled', 'reconfigured', 'revamped', 'modified', 'redesigned'],
+    'communication': ['interaction', 'exchange', 'dialogue', 'correspondence', 'connection', 'discourse', 'discussion', 'conversation', 'transmission', 'interchange'],
+    'access': ['entry', 'availability', 'reach', 'admission', 'connectivity', 'accessibility', 'approach', 'gateway', 'entrance', 'means of entry'],
+    'education': ['learning', 'instruction', 'teaching', 'training', 'schooling', 'pedagogy', 'academic development', 'educational process', 'knowledge acquisition', 'skill development'],
+    'facilitating': ['enabling', 'supporting', 'assisting', 'aiding', 'helping', 'promoting', 'expediting', 'simplifying', 'streamlining', 'fostering'],
+    'learning': ['education', 'study', 'knowledge acquisition', 'skill development', 'comprehension', 'understanding', 'mastery', 'training', 'development', 'growth'],
+    'personalized': ['customized', 'tailored', 'individualized', 'adapted', 'modified', 'specialized', 'bespoke', 'custom-made', 'unique', 'specific'],
+    'improvement': ['enhancement', 'advancement', 'upgrade', 'development', 'refinement', 'progress', 'betterment', 'optimization', 'growth', 'evolution'],
+    'abstract': ['theoretical', 'conceptual', 'intangible', 'complex', 'non-concrete', 'philosophical', 'notional', 'intellectual', 'academic', 'ideological'],
+    'environments': ['settings', 'surroundings', 'contexts', 'conditions', 'atmospheres', 'spaces', 'situations', 'frameworks', 'ecosystems', 'domains'],
+    'geographical': ['spatial', 'regional', 'territorial', 'locational', 'physical', 'topographical', 'geographic', 'environmental', 'spatial', 'area-based'],
+    'barriers': ['obstacles', 'limitations', 'restrictions', 'constraints', 'impediments', 'hindrances', 'roadblocks', 'challenges', 'difficulties', 'obstructions'],
+    'enabling': ['allowing', 'facilitating', 'permitting', 'empowering', 'supporting', 'assisting', 'helping', 'promoting', 'encouraging', 'fostering'],
+    'remote': ['distant', 'far', 'virtual', 'online', 'digital', 'web-based', 'off-site', 'decentralized', 'distributed', 'telecommuting'],
+    'quality': ['standard', 'excellence', 'caliber', 'grade', 'value', 'merit', 'worth', 'superiority', 'distinction', 'fineness'],
+    'trend': ['pattern', 'tendency', 'direction', 'movement', 'drift', 'inclination', 'development', 'progression', 'course', 'shift'],
+    'integrating': ['incorporating', 'combining', 'merging', 'unifying', 'consolidating', 'blending', 'synthesizing', 'amalgamating', 'fusing', 'coordinating'],
+    'efficiency': ['effectiveness', 'productivity', 'performance', 'competence', 'capability', 'proficiency', 'optimization', 'streamlining', 'functionality', 'operation'],
+    'inclusivity': ['inclusion', 'accessibility', 'openness', 'acceptance', 'diversity', 'equality', 'integration', 'participation', 'involvement', 'engagement'],
+    'challenges': ['difficulties', 'obstacles', 'problems', 'hurdles', 'issues', 'complications', 'impediments', 'barriers', 'constraints', 'limitations'],
+    'crucial': ['critical', 'essential', 'vital', 'important', 'key', 'fundamental', 'necessary', 'significant', 'decisive', 'imperative'],
+    'navigate': ['guide', 'maneuver', 'direct', 'steer', 'traverse', 'handle', 'manage', 'address', 'deal with', 'work through'],
+    'carefully': ['cautiously', 'meticulously', 'thoroughly', 'diligently', 'attentively', 'prudently', 'mindfully', 'precisely', 'thoughtfully', 'conscientiously']
+};
+
+// Create popup element
+const suggestionPopup = document.createElement('div');
+suggestionPopup.className = 'suggestion-popup';
+document.body.appendChild(suggestionPopup);
+
+let activeHighlight = null;
+
+// Function to show suggestions popup
+function showSuggestions(word, element) {
+    const suggestions = wordSuggestions[word.toLowerCase()] || [];
+    if (suggestions.length === 0) return;
+
+    const rect = element.getBoundingClientRect();
+    suggestionPopup.style.left = `${rect.left}px`;
+    suggestionPopup.style.top = `${rect.bottom + window.scrollY + 5}px`;
+
+    // Generate suggestion items
+    suggestionPopup.innerHTML = suggestions.map(suggestion => 
+        `<div class="suggestion-item">${suggestion}</div>`
+    ).join('<div class="suggestion-divider"></div>');
+
+    // Add click handlers to suggestions
+    suggestionPopup.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+            element.textContent = item.textContent;
+            hideSuggestions();
+        });
+    });
+
+    suggestionPopup.classList.add('show');
+    activeHighlight = element;
+}
+
+// Function to hide suggestions popup
+function hideSuggestions() {
+    suggestionPopup.classList.remove('show');
+    activeHighlight = null;
 }
 
 // Function to highlight differences
@@ -49,11 +178,28 @@ function highlightDifferences(original, proofread) {
 
     for (let i = 0; i < Math.max(words1.length, words2.length); i++) {
         if (i < words1.length && i < words2.length && words1[i] !== words2[i]) {
+            // This is a correction
             originalHtml += `<span class="error-highlight">${words1[i]}</span> `;
-            proofreadHtml += `<span class="correction-highlight">${words2[i]}</span> `;
+            const hasSuggestions = wordSuggestions[words2[i].toLowerCase()] ? 'has-suggestions' : '';
+            proofreadHtml += `<span class="correction-highlight ${hasSuggestions}" data-word="${words2[i]}">${words2[i]}</span> `;
         } else {
-            if (i < words1.length) originalHtml += words1[i] + ' ';
-            if (i < words2.length) proofreadHtml += words2[i] + ' ';
+            // Check for suggestions in unchanged words
+            if (i < words1.length) {
+                const word = words1[i];
+                if (wordSuggestions[word.toLowerCase()]) {
+                    originalHtml += `<span class="correction-highlight has-suggestions" data-word="${word}">${word}</span> `;
+                } else {
+                    originalHtml += word + ' ';
+                }
+            }
+            if (i < words2.length) {
+                const word = words2[i];
+                if (wordSuggestions[word.toLowerCase()]) {
+                    proofreadHtml += `<span class="correction-highlight has-suggestions" data-word="${word}">${word}</span> `;
+                } else {
+                    proofreadHtml += word + ' ';
+                }
+            }
         }
     }
 
@@ -433,3 +579,14 @@ function pauseSpeech() {
         }
     }
 }
+
+// Add click handlers for suggestions
+document.addEventListener('click', (e) => {
+    const highlight = e.target.closest('.correction-highlight');
+    if (highlight && highlight.classList.contains('has-suggestions')) {
+        const word = highlight.dataset.word;
+        showSuggestions(word, highlight);
+    } else if (!e.target.closest('.suggestion-popup')) {
+        hideSuggestions();
+    }
+});
