@@ -137,6 +137,9 @@ document.body.appendChild(suggestionPopup);
 
 let activeHighlight = null;
 
+// Track user's selected suggestions
+const selectedSuggestions = new Map();
+
 // Function to show suggestions popup
 function showSuggestions(word, element) {
     const suggestions = wordSuggestions[word.toLowerCase()] || [];
@@ -154,7 +157,12 @@ function showSuggestions(word, element) {
     // Add click handlers to suggestions
     suggestionPopup.querySelectorAll('.suggestion-item').forEach(item => {
         item.addEventListener('click', () => {
-            element.textContent = item.textContent;
+            const originalWord = element.dataset.word;
+            const selectedSuggestion = item.textContent;
+            // Store the selected suggestion
+            selectedSuggestions.set(originalWord, selectedSuggestion);
+            // Update the displayed text
+            element.textContent = selectedSuggestion;
             hideSuggestions();
         });
     });
@@ -169,36 +177,65 @@ function hideSuggestions() {
     activeHighlight = null;
 }
 
+// Function to find the longest matching phrase
+function findLongestMatch(words, startIndex) {
+    let longestMatch = '';
+    let currentPhrase = '';
+    
+    for (let i = startIndex; i < words.length; i++) {
+        if (i > startIndex) currentPhrase += ' ';
+        currentPhrase += words[i].toLowerCase();
+        if (wordSuggestions[currentPhrase]) {
+            longestMatch = currentPhrase;
+        }
+    }
+    
+    return longestMatch;
+}
+
+// Function to count words in a phrase
+function countWords(phrase) {
+    return phrase.trim().split(/\s+/).length;
+}
+
 // Function to highlight differences
 function highlightDifferences(original, proofread) {
+    // Split texts into words
     const words1 = original.split(/\s+/);
     const words2 = proofread.split(/\s+/);
     let originalHtml = '';
     let proofreadHtml = '';
-
-    for (let i = 0; i < Math.max(words1.length, words2.length); i++) {
-        if (i < words1.length && i < words2.length && words1[i] !== words2[i]) {
-            // This is a correction
+    
+    // First pass: handle original text - keep it exactly as is, only highlight actual corrections
+    for (let i = 0; i < words1.length; i++) {
+        if (i < words2.length && words1[i] !== words2[i]) {
             originalHtml += `<span class="error-highlight">${words1[i]}</span> `;
+        } else {
+            originalHtml += words1[i] + ' ';
+        }
+    }
+
+    // Second pass: handle proofread text with all suggestions
+    let i = 0;
+    while (i < words2.length) {
+        if (i < words1.length && words1[i] !== words2[i]) {
+            // This is a correction
             const hasSuggestions = wordSuggestions[words2[i].toLowerCase()] ? 'has-suggestions' : '';
             proofreadHtml += `<span class="correction-highlight ${hasSuggestions}" data-word="${words2[i]}">${words2[i]}</span> `;
+            i++;
         } else {
-            // Check for suggestions in unchanged words
-            if (i < words1.length) {
-                const word = words1[i];
-                if (wordSuggestions[word.toLowerCase()]) {
-                    originalHtml += `<span class="correction-highlight has-suggestions" data-word="${word}">${word}</span> `;
-                } else {
-                    originalHtml += word + ' ';
-                }
-            }
-            if (i < words2.length) {
-                const word = words2[i];
-                if (wordSuggestions[word.toLowerCase()]) {
-                    proofreadHtml += `<span class="correction-highlight has-suggestions" data-word="${word}">${word}</span> `;
-                } else {
-                    proofreadHtml += word + ' ';
-                }
+            // Check for phrases and suggestions
+            const phrase = findLongestMatch(words2, i);
+            if (phrase) {
+                const wordCount = countWords(phrase);
+                proofreadHtml += `<span class="correction-highlight has-suggestions" data-word="${phrase}">${words2.slice(i, i + wordCount).join(' ')}</span> `;
+                i += wordCount;
+            } else if (wordSuggestions[words2[i].toLowerCase()]) {
+                proofreadHtml += `<span class="correction-highlight has-suggestions" data-word="${words2[i]}">${words2[i]}</span> `;
+                i++;
+            } else {
+                proofreadHtml += words2[i] + ' ';
+                i++;
             }
         }
     }
@@ -264,8 +301,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Set up download button
         if (proofData.download_url) {
-            downloadBtn.addEventListener('click', () => {
-                window.location.href = 'https://pdf-docs.onrender.com' + proofData.download_url;
+            downloadBtn.addEventListener('click', async () => {
+                try {
+                    // Get the active file element
+                    const activeFile = document.querySelector('.uploaded-file.active');
+                    if (!activeFile) {
+                        throw new Error('No active file selected');
+                    }
+
+                    // Get the proofread text and filename from the active file
+                    const proofreadText = activeFile.dataset.proofreadText;
+                    const fileName = activeFile.dataset.fileName;
+                    
+                    // Create a FormData object to send the text and selected suggestions
+                    const formData = new FormData();
+                    formData.append('text', proofreadText);
+                    formData.append('filename', fileName);
+                    formData.append('selected_suggestions', JSON.stringify(Array.from(selectedSuggestions.entries())));
+                    
+                    // Send the data to the backend
+                    const response = await fetch('https://pdf-docs.onrender.com/convert', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to generate PDF with suggestions');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Download the generated PDF
+                    window.location.href = 'https://pdf-docs.onrender.com' + data.download_url;
+                } catch (error) {
+                    console.error('Error downloading PDF:', error);
+                    alert('Error generating PDF with suggestions. Please try again.');
+                }
             });
         }
 
@@ -422,21 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 originalContent.innerHTML = originalHtml;
                 proofreadContent.innerHTML = proofreadHtml;
                 document.querySelector('#originalSection .section-header h2').textContent = newUploadedFile.dataset.fileName;
-
-                // Update download button
-                if (newUploadedFile.dataset.downloadUrl) {
-                    downloadBtn.onclick = () => {
-                        window.location.href = 'https://pdf-docs.onrender.com' + newUploadedFile.dataset.downloadUrl;
-                    };
-                }
             });
-
-            // Update download button if URL is available
-            if (data.download_url) {
-                downloadBtn.onclick = () => {
-                    window.location.href = 'https://pdf-docs.onrender.com' + data.download_url;
-                };
-            }
 
             // Reset zoom
             currentZoom = 100;
