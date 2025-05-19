@@ -140,6 +140,9 @@ let activeHighlight = null;
 // Track user's selected suggestions
 const selectedSuggestions = new Map();
 
+// Store the original file globally
+let originalFile = null;
+
 // Function to show suggestions popup
 function showSuggestions(word, element) {
     const suggestions = wordSuggestions[word.toLowerCase()] || [];
@@ -267,7 +270,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Get the file name from the original file data
-        const fileName = orgData.file_name || proofData.file_name ;
+        const fileName = proofData.file_name || orgData.file_name;
+        
+        // Try to retrieve the original file from the File API if available
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            // Try to get the file from the file input if present
+            const fileInput = document.getElementById('pdfFile') || document.getElementById('newFileInput');
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                originalFile = fileInput.files[0];
+            }
+        }
         
         // Update file name in both places
         const initialFile = document.querySelector('.uploaded-file');
@@ -318,7 +330,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('text', proofreadText);
                     formData.append('filename', fileName);
                     formData.append('selected_suggestions', JSON.stringify(Array.from(selectedSuggestions.entries())));
-                    
+                    if (originalFile) {
+                        formData.append('file', originalFile);
+                    }
                     // Send the data to the backend
                     const response = await fetch('https://pdf-docs.onrender.com/convert', {
                         method: 'POST',
@@ -326,7 +340,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     
                     if (!response.ok) {
-                        throw new Error('Failed to generate PDF with suggestions');
+                        let errorMsg = 'Failed to generate PDF with suggestions';
+                        try {
+                            const errorData = await response.json();
+                            if (errorData && errorData.error) {
+                                errorMsg = errorData.error;
+                            }
+                        } catch (e) {}
+                        alert(errorMsg);
+                        throw new Error(errorMsg);
                     }
                     
                     const data = await response.json();
@@ -335,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = 'https://pdf-docs.onrender.com' + data.download_url;
                 } catch (error) {
                     console.error('Error downloading PDF:', error);
-                    alert('Error generating PDF with suggestions. Please try again.');
+                    // alert('Error generating PDF with suggestions. Please try again.');
                 }
             });
         }
@@ -397,6 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
     newFileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        originalFile = file;
 
         // Validate file
         if (file.type !== 'application/pdf') {
@@ -450,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Store the file data in the element
             newUploadedFile.dataset.originalText = data.original_text;
             newUploadedFile.dataset.proofreadText = data.proofread_text;
-            newUploadedFile.dataset.fileName = file.name;
+            newUploadedFile.dataset.fileName = data.file_name || file.name;
             if (data.download_url) {
                 newUploadedFile.dataset.downloadUrl = data.download_url;
             }
@@ -470,9 +493,9 @@ document.addEventListener('DOMContentLoaded', function() {
             proofreadContent.innerHTML = proofreadHtml;
 
             // Update file name in section header with the actual file name
-            document.querySelector('#originalSection .section-header h2').textContent = file.name;
+            document.querySelector('#originalSection .section-header h2').textContent = data.file_name || file.name;
             // Update the file name in the uploaded file element
-            newUploadedFile.querySelector('.file-name').textContent = file.name;
+            newUploadedFile.querySelector('.file-name').textContent = data.file_name || file.name;
 
             // Add click handler to the file element
             newUploadedFile.addEventListener('click', (e) => {
